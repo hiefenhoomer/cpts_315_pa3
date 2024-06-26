@@ -1,6 +1,7 @@
-import Processing
+import Preprocessing
 
 from perceptrons.AveragedPerceptron import AveragedPerceptron
+from perceptrons.MultiClassPerceptron import MultiClassPerceptron
 
 raw_train_path = 'raw/traindata.txt'
 raw_test_path = 'raw/testdata.txt'
@@ -27,11 +28,16 @@ learning_rate = 1
 epochs = 20
 
 if __name__ == '__main__':
-    Processing.clean_file(raw_train_path, processed_train_path, stop_list_path)
-    Processing.clean_file(raw_test_path, processed_test_path, stop_list_path)
-    averaged_perceptron = AveragedPerceptron(learning_rate, Processing.create_vocabulary(processed_ocr_train_path))
-    success_perceptron_dict = averaged_perceptron.train(processed_train_path, training_labels_path,
-                                                        processed_test_path, test_labels_path, epochs)
-    Processing.write_table_to_file(success_perceptron_dict, success_perceptron_path)
+    # Preprocessing.clean_file(raw_train_path, processed_train_path, stop_list_path)
+    # Preprocessing.clean_file(raw_test_path, processed_test_path, stop_list_path)
+    # averaged_perceptron = AveragedPerceptron(learning_rate, Preprocessing.create_vocabulary(processed_train_path))
+    # success_perceptron_dict = averaged_perceptron.train(processed_train_path, training_labels_path,
+    #                                                    processed_test_path, test_labels_path, epochs)
+    # Preprocessing.write_table_to_file(success_perceptron_dict, success_perceptron_path)
 
-    Processing.create_processed_ocr(raw_ocr_train_path, processed_ocr_train_path, ocr_training_labels_path)
+    Preprocessing.create_processed_ocr(raw_ocr_train_path, processed_ocr_train_path, ocr_training_labels_path)
+    Preprocessing.create_processed_ocr(raw_ocr_test_path, processed_ocr_test_path, ocr_test_labels_path)
+
+    multi_class_perceptron_vocab = Preprocessing.create_multi_class_vocab(processed_ocr_train_path, ocr_training_labels_path)
+    print(multi_class_perceptron_vocab)
+    print(len(multi_class_perceptron_vocab))
