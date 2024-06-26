@@ -16,6 +16,12 @@ labels/
 # Ignore processed directory files
 processed/
 
+raw/
+
+stoplist.txt
+
+.idea
+
 # Ignore logs
 *.log
 
