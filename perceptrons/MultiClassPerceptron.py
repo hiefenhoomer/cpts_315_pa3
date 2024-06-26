@@ -35,30 +35,34 @@ class MultiClassPerceptron:
         feature_indices = [self.feature_to_index[portion] for portion in image]
         result = []
         for feature_index in feature_indices:
-            feature_classes = self.feature_to_class_matrix[feature_index]
+            feature_classes = self.feature_to_class_matrix[self.index_to_feature[feature_index]]
             feature_weight = self.weights[feature_index]
-            result.append(np.multiply(feature_weight, feature_classes))
-        result = [sum(matrix) for matrix in result]
-        return feature_indices, np.argmax(result)
+            result.append(feature_classes * feature_weight)
+        summation = np.zeros(self.class_count)
+        for matrix in result:
+            summation + matrix
+        return feature_indices, np.argmax(summation)
 
     def update_weights(self, feature_indices, predicted_index, actual_index):
         for feature_index in feature_indices:
-            self.weights[feature_index][actual_index] += self.learning_rate
-            self.weights[predicted_index][predicted_index] -= self.learning_rate
+            feature = self.index_to_feature[feature_index]
+            self.weights[feature_index][actual_index] += self.learning_rate * self.feature_to_class_matrix[feature][actual_index]
+            self.weights[feature_index][predicted_index] -= self.learning_rate * self.feature_to_class_matrix[feature][predicted_index]
 
-    def train(self, processed_ocr_train, processed_ocr_test):
+    def train(self, processed_ocr_train, ocr_train_label_path):
         for epoch in range(self.epochs):
             count = 0
             correct = 0
-            with open(processed_ocr_train, 'r') as train, open(processed_ocr_test, 'r') as test:
+            with open(processed_ocr_train, 'r') as train, open(ocr_train_label_path, 'r') as ocr_train_label:
                 picture = []
+
                 for line in train:
                     line = line.strip()
                     if line == '00000000':
                         continue
                     if line == '':
                         feature_indices, predicted_class_index = self.predict_picture(picture)
-                        actual_class_index = self.class_to_index[test.readline().strip()]
+                        actual_class_index = self.class_to_index[ocr_train_label.readline().strip()]
 
                         if predicted_class_index != actual_class_index:
                             self.update_weights(feature_indices, predicted_class_index, actual_class_index)
@@ -66,8 +70,10 @@ class MultiClassPerceptron:
                             correct += 1
 
                         picture = []
-                        count += 1
+                    if line == '':
+                        continue
                     picture.append(line)
-                print('Percentage correct: ' + str(int(correct / count * 100)) + '%\n')
+                    count += 1
+            print('Percentage correct: ' + str(int(correct / count * 100)) + '%\n')
 
 

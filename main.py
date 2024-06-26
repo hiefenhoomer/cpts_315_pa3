@@ -42,4 +42,4 @@ if __name__ == '__main__':
     classes = Preprocessing.all_classes(ocr_training_labels_path)
 
     multi_class_perceptron = MultiClassPerceptron(learning_rate, epochs, multi_class_perceptron_vocab, classes)
-    multi_class_perceptron.train(processed_ocr_train_path, processed_ocr_test_path)
+    multi_class_perceptron.train(processed_ocr_train_path, ocr_training_labels_path)
