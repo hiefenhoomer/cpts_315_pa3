@@ -110,6 +110,7 @@ def all_classes(ocr_train_labels_path):
     classes = []
     with open(ocr_train_labels_path, 'r') as labels:
         for label in labels:
+            label = label.strip()
             if label not in classes:
                 classes.append(label)
         labels.close()

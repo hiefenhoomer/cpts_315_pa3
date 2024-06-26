@@ -35,9 +35,11 @@ if __name__ == '__main__':
     #                                                    processed_test_path, test_labels_path, epochs)
     # Preprocessing.write_table_to_file(success_perceptron_dict, success_perceptron_path)
 
-    Preprocessing.create_processed_ocr(raw_ocr_train_path, processed_ocr_train_path, ocr_training_labels_path)
-    Preprocessing.create_processed_ocr(raw_ocr_test_path, processed_ocr_test_path, ocr_test_labels_path)
+    # Preprocessing.create_processed_ocr(raw_ocr_train_path, processed_ocr_train_path, ocr_training_labels_path)
+    # Preprocessing.create_processed_ocr(raw_ocr_test_path, processed_ocr_test_path, ocr_test_labels_path)
 
     multi_class_perceptron_vocab = Preprocessing.create_multi_class_vocab(processed_ocr_train_path, ocr_training_labels_path)
-    print(multi_class_perceptron_vocab)
-    print(len(multi_class_perceptron_vocab))
+    classes = Preprocessing.all_classes(ocr_training_labels_path)
+
+    multi_class_perceptron = MultiClassPerceptron(learning_rate, epochs, multi_class_perceptron_vocab, classes)
+    multi_class_perceptron.train(processed_ocr_train_path, processed_ocr_test_path)
