@@ -28,8 +28,8 @@ class AveragedPerceptron(Perceptron.Perceptron):
         accuracy_dict = super().train(processed_training_path, training_labels_path, processed_test_path,
                                       test_labels_path, epochs)
         self.weights = self.get_final_weights()
-        averaged_training = self.check_accuracy(processed_training_path, training_labels_path)
-        averaged_test = self.check_accuracy(processed_test_path, test_labels_path)
+        averaged_training = self.check_accuracy(processed_training_path, training_labels_path, 'Training Failed')
+        averaged_test = self.check_accuracy(processed_test_path, test_labels_path, 'Test Failed')
         accuracy_dict['Epoch'].append('Averaged Perceptron')
         accuracy_dict['Training Accuracy %'].append(averaged_training)
         accuracy_dict['Test Accuracy %'].append(averaged_test)

@@ -10,7 +10,7 @@ class Perceptron:
         # Learning rate.
         self.learning_rate = learning_rate
         # Useful for formatting
-        self.accuracy_dict = {'Epoch': [], 'Training Accuracy %': [], 'Test Accuracy %': []}
+        self.accuracy_dict = {'Epoch': [], 'Training Accuracy %': [], 'Test Accuracy %': [], 'Training Failed': [], 'Test Failed': []}
 
     def line_to_feature_vector(self, line):
         # Feature vector should be initialized to be the length of the vocabulary.
@@ -40,6 +40,7 @@ class Perceptron:
             # Keep count of correct results and incorrect results.
             correct_count = 0
             total_count = 0
+            incorrect_count = 0
             # Open label and training files.
             with open(processed_training_path, 'r') as processed_file, open(training_labels_path, 'r') as labels_file:
                 # Skip if line == '\n' - this means we're at the end of the file.
@@ -61,6 +62,7 @@ class Perceptron:
 
                     # Adjust the weights if the prediction is incorrect.
                     if prediction != actual:
+                        incorrect_count += 1
                         # Must have a positive or negative correction factor, otherwise we lose a degree of adjustment.
                         if prediction < actual:
                             correction_factor = 1
@@ -77,14 +79,16 @@ class Perceptron:
                 self.accuracy_dict['Epoch'].append(epoch)
                 training_percentage_correct = int(correct_count / total_count * 100)
                 self.accuracy_dict['Training Accuracy %'].append(training_percentage_correct)
-                test_percent_correct = self.check_accuracy(processed_test_path, test_labels_path)
+                self.accuracy_dict['Training Failed'].append(incorrect_count)
+                test_percent_correct = self.check_accuracy(processed_test_path, test_labels_path, 'Test Failed')
                 self.accuracy_dict['Test Accuracy %'].append(test_percent_correct)
 
         return self.accuracy_dict
 
-    def check_accuracy(self, processed_path, labels_path):
+    def check_accuracy(self, processed_path, labels_path, table_column):
         correct_count = 0
         total_count = 0
+        failed = 0
         with open(processed_path, 'r') as processed_file, open(labels_path, 'r') as labels_file:
             for line in processed_file:
                 if line == '\n':
@@ -99,7 +103,9 @@ class Perceptron:
 
                 if prediction == actual:
                     correct_count += 1
+                else:
+                    failed += 1
 
             labels_file.close()
-
+            self.accuracy_dict[table_column].append(failed)
         return int(correct_count / total_count * 100)
