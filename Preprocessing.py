@@ -83,27 +83,42 @@ def create_processed_ocr(ocr_input_path, ocr_output_path, ocr_label_path):
         ocr_label.close()
 
 
-def create_multi_class_vocab(processed_ocr_train_path, ocr_label_path):
-    vocab = {}
-    with open(processed_ocr_train_path, 'r') as features, open(ocr_label_path, 'r') as classes:
-        feature_list = []
-        for feature in features:
-            feature = feature.strip()
-            if feature == '00000000':
-                continue
+def file_line_iterator(file_path):
+    with open(file_path, 'r') as features:
+        for line in features:
+            yield line.strip()
 
-            if feature == '':
-                label = classes.readline().strip()
-                for feat in feature_list:
-                    if feat not in vocab:
-                        vocab[feat] = []
-                    if label not in vocab[feat]:
-                        vocab[feat].append(label)
-                        vocab[feat].sort()
-                continue
 
-            feature_list.append(feature)
-        return vocab
+def create_ocr_vocabulary(ocr_input_path, ocr_label_path):
+    images = []
+    it_ocr_images = file_line_iterator(ocr_input_path)
+    it_ocr_labels = file_line_iterator(ocr_label_path)
+    ocr_codes = []
+    ocr_labels = []
+    vocabulary = {}
+    try:
+        while True:
+            image = []
+            for i in range(16):
+                partial = next(it_ocr_images)
+                image.append(partial)
+            code = next(it_ocr_labels)
+            ocr_labels.append(code)
+            if code not in ocr_codes:
+                ocr_codes.append(code)
+            images.append(image)
+            next(it_ocr_images)
+    except StopIteration:
+        pass
+
+    for image in images:
+        for line in image:
+            vocabulary[line] = 0
+    vocabulary = vocabulary.keys()
+    vocabulary = {line: idx for idx, line in enumerate(vocabulary)}
+    ocr_codes = sorted(ocr_codes)
+    ocr_dict = {ocr_code: idx for idx, ocr_code in enumerate(ocr_codes)}
+    return ocr_dict, ocr_labels, vocabulary, images
 
 
 def all_classes(ocr_train_labels_path):

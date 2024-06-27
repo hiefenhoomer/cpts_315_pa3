@@ -38,8 +38,6 @@ if __name__ == '__main__':
     # Preprocessing.create_processed_ocr(raw_ocr_train_path, processed_ocr_train_path, ocr_training_labels_path)
     # Preprocessing.create_processed_ocr(raw_ocr_test_path, processed_ocr_test_path, ocr_test_labels_path)
 
-    multi_class_perceptron_vocab = Preprocessing.create_multi_class_vocab(processed_ocr_train_path, ocr_training_labels_path)
-    classes = Preprocessing.all_classes(ocr_training_labels_path)
-
-    multi_class_perceptron = MultiClassPerceptron(learning_rate, epochs, multi_class_perceptron_vocab, classes)
-    multi_class_perceptron.train(processed_ocr_train_path, ocr_training_labels_path)
+    code_dict, ocr_labels, multi_class_vocab, images = Preprocessing.create_ocr_vocabulary(processed_ocr_train_path, ocr_training_labels_path)
+    multi_class_perceptron = MultiClassPerceptron(learning_rate, epochs, ocr_labels, code_dict, multi_class_vocab, images)
+    multi_class_perceptron.train()
