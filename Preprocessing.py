@@ -132,11 +132,10 @@ def all_classes(ocr_train_labels_path):
     return sorted(classes)
 
 
-def write_table_to_file(df_dict, file_path):
-    if os.path.exists(file_path):
-        os.remove(file_path)
+def write_table_to_file(df_dict, file_path, open_option, table_name):
     df = pd.DataFrame(df_dict)
-    table = tabulate(df, headers='keys', tablefmt='fancy_grid', showindex='false')
-    with open(file_path, 'w') as file:
-        file.write('Averaged and Standard Perceptron Success:\n\n')
+    table = tabulate(df, headers='keys', tablefmt='pretty', showindex='false')
+    with open(file_path, open_option) as file:
+        file.write(table_name + '\n\n')
         file.write(table)
+        file.write('\n\n\n\n')
